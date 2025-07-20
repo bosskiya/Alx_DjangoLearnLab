@@ -17,7 +17,7 @@ class LibraryDetailView(DetailView):
     model = Library
     context_object_name = 'library'
 
-def register_view(request):
+def register(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
