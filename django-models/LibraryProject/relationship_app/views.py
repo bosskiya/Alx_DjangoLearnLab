@@ -9,11 +9,11 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def list_books(request):
     books = Book.objects.all()
-    return render(request, 'relationship_app/list_books.html', {'books': books})
+    return render(request, 'list_books.html', {'books': books})
 
 
 class LibraryDetailView(DetailView):
-    template_name = 'relationship_app/library_detail.html'
+    template_name = 'library_detail.html'
     model = Library
     context_object_name = 'library'
 
