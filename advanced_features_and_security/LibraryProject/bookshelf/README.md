@@ -57,3 +57,55 @@ Enabled using `django-csp`, limits which domains can load JS, CSS, images, etc.,
 - Try injecting scripts in search — should be safely escaped.
 - Use browser dev tools to test for blocked inline scripts (CSP enforcement).
 - Test cookie security in browser → Cookies should be marked `Secure` and `HttpOnly`.
+
+# settings.py Summary (already provided above)
+
+Purpose of Key Settings:
+
+    SECURE_SSL_REDIRECT: Force all traffic to HTTPS.
+
+    SECURE_HSTS_SECONDS: Tell browsers to remember to always use HTTPS.
+
+    X_FRAME_OPTIONS: Block the app from being embedded in an iframe (clickjacking defense).
+
+    SESSION_COOKIE_SECURE: Prevent cookies from leaking over HTTP.
+
+    SECURE_BROWSER_XSS_FILTER: Enable basic XSS protection in modern browsers.
+
+✅ Deployment Guide (deployment_https.md)
+
+# HTTPS Deployment for Django Project
+
+## Step 1: Get an SSL Certificate
+Use Let's Encrypt:
+```bash
+sudo apt install certbot
+sudo certbot --nginx
+
+Step 2: Configure Nginx
+
+Use the provided nginx.conf to:
+
+    Redirect HTTP to HTTPS
+
+    Serve SSL-secured traffic
+
+    Forward requests to Django via Gunicorn or uWSGI
+
+Step 3: Update Django Settings
+
+Ensure DEBUG=False and HTTPS-related settings are active:
+
+    SECURE_SSL_REDIRECT
+
+    SESSION_COOKIE_SECURE
+
+    SECURE_HSTS_SECONDS
+
+Step 4: Test Your Deployment
+
+Visit your domain in browser:
+
+    Confirm HTTPS is enforced
+
+    Use https://securityheaders.com/ to validate headers
