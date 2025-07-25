@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.conf import settings
 
 
 class Author(models.Model):
@@ -48,7 +49,7 @@ class UserProfile(models.Model):
         ("Librarian", "Librarian"),
         ("Member", "Member")
     ]
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=Role_choice)
 
     def __str__(self):
