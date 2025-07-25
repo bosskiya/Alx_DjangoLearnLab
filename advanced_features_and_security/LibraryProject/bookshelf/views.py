@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import permission_required
 from .models import Book
-from .forms import BookForm  # You’ll need a simple ModelForm for Book
+from .forms import BookForm, SearchForm
+from django.db.models import Q
 
 @permission_required('bookshelf.can_view', raise_exception=True)
 def book_list(request):
@@ -38,3 +39,13 @@ def delete_book(request, pk):
         book.delete()
         return redirect('list_books')
     return render(request, 'relationship_app/book_confirm_delete.html', {'book': book})
+
+def search_books(request):
+    form = SearchForm(request.GET or None)
+    results = []
+    if form.is_valid():
+        query = form.cleaned_data['query']
+        results = Book.objects.filter(
+            Q(title__icontains=query) | Q(author__name__icontains=query)
+        )
+    return render(request, 'relationship_app/book_list.html', {'form': form, 'results': results})

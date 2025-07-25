@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+from csp.constants import SELF
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,10 +25,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ro9@041fnuc7@8nx6+=q6pl=04z+c%0-t-a!b0!$mwg1n20=&t'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'yourdomain.com']
 
+# Prevent content sniffing
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Enable browser’s XSS filter
+SECURE_BROWSER_XSS_FILTER = True
+
+# Prevent your site from being framed (clickjacking protection)
+X_FRAME_OPTIONS = 'DENY'
+
+# Use HTTPS for CSRF cookie
+CSRF_COOKIE_SECURE = True
+
+# Use HTTPS for session cookie
+SESSION_COOKIE_SECURE = True
 
 # Application definition
 
@@ -41,9 +56,12 @@ INSTALLED_APPS = [
 
     'bookshelf',
     'relationship_app',
+
+    'csp',
 ]
 
 MIDDLEWARE = [
+    'csp.middleware.CSPMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -131,3 +149,13 @@ LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
 
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
+
+CONTENT_SECURITY_POLICY = {
+    "DIRECTIVES": {
+        "default-src": [SELF],
+        "sytle-src": [SELF, 'fonts.googleapis.com'],
+        "font-src": [SELF, 'fonts.gstatic.com'],
+        "script-src": [SELF],
+        "img-src": [SELF, "data:"],
+    },
+}
