@@ -8,7 +8,7 @@ class Book(models.Model):
     publication_year = models.IntegerField()
 
 
-class UserManager(BaseUserManager):
+class CustomUserManager(BaseUserManager):
     def create_user(self, username, email, password=None, **kwargs):
         """Create and return a `User` with an email, phone number, username and password."""
         if username is None:
@@ -44,7 +44,7 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
 
-    objects = UserManager()
+    objects = CustomUserManager()
 
     def __str__(self):
         return f"{self.username}"
