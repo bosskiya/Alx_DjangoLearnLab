@@ -1,7 +1,16 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
-from .views import PostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeleteView, CommentUpdateView, CommentDeleteView, CommentCreateView
+from .models import Post
+from .views import SearchResultsView, PostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeleteView, CommentUpdateView, CommentDeleteView, CommentCreateView
+from taggit.models import Tag
+from django.shortcuts import get_object_or_404, render
+
+# Tag filtered posts view
+def posts_by_tag(request, tag_slug):
+    tag = get_object_or_404(Tag, slug=tag_slug)
+    posts = Post.objects.filter(tags__slug__in=[tag_slug])
+    return render(request, 'blog/posts_by_tag.html', {'tag': tag, 'posts': posts})
 
 urlpatterns = [
     # Auth URLs
@@ -21,4 +30,7 @@ urlpatterns = [
     path('post/<int:pk>/comments/new/', CommentCreateView.as_view(), name='comment-create'),
     path('comment/<int:pk>/update/', CommentUpdateView.as_view(), name='comment-update'),
     path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment-delete'),
+
+    path('search/', SearchResultsView.as_view(), name='post-search'),
+    path('tags/<slug:tag_slug>/', posts_by_tag, name='posts-by-tag'),
 ]
