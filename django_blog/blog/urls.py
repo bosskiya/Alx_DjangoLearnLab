@@ -7,7 +7,7 @@ from taggit.models import Tag
 from django.shortcuts import get_object_or_404, render
 
 # Tag filtered posts view
-def posts_by_tag(request, tag_slug):
+def PostByTagListView(request, tag_slug):
     tag = get_object_or_404(Tag, slug=tag_slug)
     posts = Post.objects.filter(tags__slug__in=[tag_slug])
     return render(request, 'blog/posts_by_tag.html', {'tag': tag, 'posts': posts})
@@ -32,5 +32,5 @@ urlpatterns = [
     path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment-delete'),
 
     path('search/', SearchResultsView.as_view(), name='post-search'),
-    path('tags/<slug:tag_slug>/', posts_by_tag, name='posts-by-tag'),
+    path('tags/<slug:tag_slug>/', PostByTagListView, name='posts-by-tag'),
 ]
