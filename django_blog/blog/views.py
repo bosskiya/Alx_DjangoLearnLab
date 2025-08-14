@@ -136,7 +136,7 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user == self.get_object().author
 
 
-class SearchResultsView(ListView):
+class PostByTagListView(ListView):
     model = Post
     template_name = 'blog/search_results.html'
     context_object_name = 'posts'
