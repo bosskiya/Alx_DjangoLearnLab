@@ -24,6 +24,27 @@ class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/post_detail.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        post = self.get_object()
+        context['comments'] = post.comments.all().order_by('-created_at')
+        context['comment_form'] = CommentForm()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect(reverse('login'))
+
+        post = self.get_object()
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.author = request.user
+            comment.post = post
+            comment.save()
+            return HttpResponseRedirect(reverse('post-detail', kwargs={'pk': post.pk}))
+        return self.render_to_response(self.get_context_data(comment_form=form))
+
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -79,30 +100,13 @@ def profile(request):
     return render(request, 'blog/profile.html')
 
 
-class PostDetailView(DetailView):
-    model = Post
-    template_name = 'blog/post_detail.html'
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = PostForm
+    template_name = 'blog/post_form.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        post = self.get_object()
-        context['comments'] = post.comments.all().order_by('-created_at')
-        context['comment_form'] = CommentForm()
-        return context
-
-    def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect(reverse('login'))
-
-        post = self.get_object()
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.author = request.user
-            comment.post = post
-            comment.save()
-            return HttpResponseRedirect(reverse('post-detail', kwargs={'pk': post.pk}))
-        return self.render_to_response(self.get_context_data(comment_form=form))
+    def form_valid(self, form):
+        form.instance.author = self.request.user
 
 
 class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
