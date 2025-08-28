@@ -1,4 +1,4 @@
-from rest_framework import viewsets, filters, status
+from rest_framework import viewsets, filters, status, generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework import permissions
 from .models import Post, Comment, Like
@@ -21,7 +21,7 @@ def user_feed(request):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def like_post(request, pk):
-    post = get_object_or_404(Post, pk=pk)
+    post = generics.get_object_or_404(Post, pk=pk)
 
     like, created = Like.objects.get_or_create(user=request.user, post=post)
 
