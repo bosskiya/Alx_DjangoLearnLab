@@ -95,6 +95,7 @@ DATABASES = {
         'NAME': 'social_media_app',
         'USER': 'postgres',
         'PASSWORD': 'bini',
+        'PORT': 5432,
         'HOST': 'localhost',
     }
 }
